@@ -23,7 +23,7 @@ if (!chrome) throw new Error('Chrome non trovato: imposta la variabile CHROME co
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'icone-'));
 const html = path.join(tmp, 'icon.html');
 fs.writeFileSync(html, `<!doctype html><html><body style="margin:0;overflow:hidden">
-<div style="width:100vw;height:100vh">${svg.replace('<svg ', '<svg width="100%" height="100%" ')}</div></body></html>`);
+<div style="width:calc(100vw + 2px);height:calc(100vh + 2px)">${svg.replace('<svg ', '<svg width="100%" height="100%" preserveAspectRatio="none" ')}</div></body></html>`);
 
 const outputs = [['icon-180.png', 180], ['icon-192.png', 192], ['icon-512.png', 512], ['icon-maskable-512.png', 512]];
 for (const [name, size] of outputs) {
