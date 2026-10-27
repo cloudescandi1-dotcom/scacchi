@@ -1,0 +1,12 @@
+{
+  "name": "scacchi",
+  "version": "1.0.0",
+  "description": "Gioco degli scacchi per telefono, PC e iPad (web app installabile)",
+  "private": true,
+  "scripts": {
+    "start": "node tools/server.js",
+    "test": "node --test tests/chess.test.js tests/ai.test.js tests/lessons.test.js",
+    "icons": "node tools/make-icons.js"
+  },
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Scacchi</title>
+  <meta name="description" content="Gioco degli scacchi: due giocatori o contro il computer.">
+  <meta name="theme-color" content="#2f2a25">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Scacchi">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Scacchi</h1>
+    <nav class="actions">
+      <button id="btn-new" type="button" title="Nuova partita">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Nuova</span>
+      </button>
+      <button id="btn-learn" type="button" title="Impara a giocare">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/></svg><span>Impara</span>
+      </button>
+      <button id="btn-undo" type="button" title="Annulla l'ultima mossa">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span>Annulla</span>
+      </button>
+      <button id="btn-flip" type="button" title="Gira la scacchiera">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></svg><span>Gira</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="board-area">
+      <div class="player-bar" id="bar-top">
+        <span class="turn-dot"></span><span class="name"></span>
+        <span class="captured"></span><span class="advantage"></span>
+      </div>
+      <div id="board" class="board" aria-label="Scacchiera"></div>
+      <div class="player-bar" id="bar-bottom">
+        <span class="turn-dot"></span><span class="name"></span>
+        <span class="captured"></span><span class="advantage"></span>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <!-- Partita normale -->
+      <div id="game-panel" class="game-panel">
+        <div class="status-row">
+          <div id="status" class="status" aria-live="polite"></div>
+          <button id="btn-suggest" type="button" class="suggest" title="Mostra una buona mossa">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>
+            <span>Suggerimento</span>
+          </button>
+        </div>
+        <ol id="moves" class="moves"></ol>
+      </div>
+
+      <!-- Modalità Impara -->
+      <div id="lesson-panel" class="lesson" hidden>
+        <div class="lesson-head">
+          <button id="btn-lessons" type="button" class="link">☰ Lezioni</button>
+          <span id="lesson-progress"></span>
+          <button id="btn-exit-learn" type="button" class="link">Esci ✕</button>
+        </div>
+        <div class="lesson-body">
+          <h2 id="lesson-title"></h2>
+          <p id="lesson-text"></p>
+          <p id="lesson-comment" class="comment" hidden></p>
+          <p id="lesson-feedback" class="feedback" hidden></p>
+        </div>
+        <div class="lesson-buttons">
+          <button id="btn-lesson-hint" type="button" class="secondary">Suggerimento</button>
+          <button id="btn-lesson-retry" type="button" class="secondary">Ricomincia</button>
+          <button id="btn-lesson-next" type="button" class="primary">Avanti</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Finestra: nuova partita -->
+  <dialog id="dlg-new">
+    <form method="dialog" id="form-new">
+      <h2>Nuova partita</h2>
+
+      <fieldset>
+        <legend>Modalità</legend>
+        <label class="choice"><input type="radio" name="mode" value="cpu" checked> Contro il computer</label>
+        <label class="choice"><input type="radio" name="mode" value="pvp"> Due giocatori (stesso dispositivo)</label>
+      </fieldset>
+
+      <div id="cpu-options">
+        <fieldset>
+          <legend>Giochi con</legend>
+          <label class="choice"><input type="radio" name="color" value="w" checked> Bianco</label>
+          <label class="choice"><input type="radio" name="color" value="b"> Nero</label>
+          <label class="choice"><input type="radio" name="color" value="r"> A caso</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Livello</legend>
+          <select name="level" id="sel-level">
+            <option value="1">1 · Principiante</option>
+            <option value="2" selected>2 · Facile</option>
+            <option value="3">3 · Medio</option>
+            <option value="4">4 · Difficile</option>
+            <option value="5">5 · Esperto</option>
+          </select>
+        </fieldset>
+      </div>
+
+      <div class="dialog-buttons">
+        <button value="cancel" type="submit" class="secondary" id="btn-new-cancel">Annulla</button>
+        <button value="ok" type="submit" class="primary">Inizia</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Finestra: promozione del pedone -->
+  <dialog id="dlg-promo">
+    <form method="dialog">
+      <h2>Promuovi il pedone</h2>
+      <div class="promo-choices" id="promo-choices"></div>
+      <div class="dialog-buttons">
+        <button value="cancel" type="submit" class="secondary">Annulla</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Finestra: fine partita -->
+  <dialog id="dlg-over">
+    <form method="dialog">
+      <h2 id="over-title"></h2>
+      <p id="over-text"></p>
+      <div class="dialog-buttons">
+        <button value="close" type="submit" class="secondary">Guarda la scacchiera</button>
+        <button value="new" type="submit" class="primary">Nuova partita</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Finestra: elenco lezioni -->
+  <dialog id="dlg-lessons">
+    <form method="dialog">
+      <h2>Impara a giocare</h2>
+      <div id="lesson-list" class="lesson-list"></div>
+      <div class="dialog-buttons">
+        <button value="cancel" type="submit" class="secondary">Chiudi</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="js/chess.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/lessons.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
