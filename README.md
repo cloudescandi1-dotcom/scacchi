@@ -2,8 +2,11 @@
 
 Gioco di scacchi per **telefono, PC e iPad**, fatto come web app installabile (PWA).
 
-## Stato (26/10/2026)
+**Gioca online:** https://cloudescandi1-dotcom.github.io/scacchi/
+
+## Stato (27/10/2026)
 - ✅ Versione 1.1 della PWA: aggiunta la modalità **Impara** e il pulsante **Suggerimento**
+- ✅ Pubblicato su GitHub Pages: si aggiorna da solo a ogni `git push`
 - ✅ 43 test automatici superati (regole verificate con i "perft" ufficiali, tutte le lezioni risolvibili)
 - ⏳ Versione Flutter (app da store): da fare, serve prima installare Flutter
 
