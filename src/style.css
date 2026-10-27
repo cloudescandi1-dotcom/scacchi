@@ -28,6 +28,12 @@ body.learning { --panel-portrait: 250px; --bars: 0px; }
 
 [hidden] { display: none !important; }
 
+/* Barre di scorrimento scure e sottili (niente banda chiara di lato) */
+* { scrollbar-width: thin; scrollbar-color: #5a5148 transparent; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #5a5148; border-radius: 3px; }
+
 * { box-sizing: border-box; }
 
 html, body {
