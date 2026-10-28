@@ -39,6 +39,9 @@
   }
 
   let peer = null, conn = null, role = null, code = null, cb = {}, timer = null, closed = true;
+  // Biglietto segreto dell'amico: il guest lo manda appena si collega; l'host accetta solo quello
+  // (il primo che arriva lo fissa). Così chi scopre il codice non può prendere il posto dell'amico.
+  let token = null;
 
   function status(s) { cb.onStatus && cb.onStatus(s); }
 
@@ -61,14 +64,37 @@
     return peer;
   }
 
+  function accept(c) {
+    if (conn && conn !== c) { try { conn.close(); } catch (e) { /* vecchia */ } }
+    conn = c;
+    status('collegato');
+    cb.onConnect && cb.onConnect();
+  }
+
   function setup(c) {
+    let checked = role === 'guest';
     c.on('open', () => {
-      if (conn && conn !== c) { try { conn.close(); } catch (e) { /* vecchia */ } }
+      if (role !== 'guest') return; // l'host aspetta il biglietto
       conn = c;
-      status('collegato');
-      cb.onConnect && cb.onConnect();
+      c.send({ t: 'hello', token });
+      accept(c);
     });
-    c.on('data', (msg) => { if (c === conn && msg && typeof msg === 'object') cb.onMessage && cb.onMessage(msg); });
+    c.on('data', (msg) => {
+      if (!msg || typeof msg !== 'object') return;
+      if (!checked) {
+        if (msg.t !== 'hello' || typeof msg.token !== 'string' || msg.token.length > 40) { try { c.close(); } catch (e) { /* già chiusa */ } return; }
+        if (token && msg.token !== token) {
+          try { c.send({ t: 'full' }); } catch (e) { /* pazienza */ }
+          setTimeout(() => { try { c.close(); } catch (e) { /* già chiusa */ } }, 500);
+          return;
+        }
+        if (!token) { token = msg.token; cb.onToken && cb.onToken(token); }
+        checked = true;
+        accept(c);
+        return;
+      }
+      if (c === conn) cb.onMessage && cb.onMessage(msg);
+    });
     c.on('close', () => {
       if (c !== conn) return;
       conn = null;
@@ -112,10 +138,11 @@
     }
   }
 
-  // r: 'host' o 'guest'; c: codice della partita; callbacks: onStatus, onConnect, onMessage
-  function open(r, c, callbacks) {
+  // r: 'host' o 'guest'; c: codice della partita; callbacks: onStatus, onConnect, onMessage, onToken
+  // t: biglietto (guest: il proprio; host: quello dell'amico già entrato, oppure null)
+  function open(r, c, callbacks, t) {
     leave();
-    role = r; code = c; cb = callbacks || {}; closed = false;
+    role = r; code = c; cb = callbacks || {}; closed = false; token = t || null;
     start();
   }
 

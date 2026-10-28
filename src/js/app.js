@@ -946,6 +946,7 @@
     apertura: 'Mi collego al server…', cerco: 'Cerco la partita dell\'amico…', attesa: 'In attesa dell\'amico…',
     assente: 'L\'amico non ha il gioco aperto: aspetto…',
     riconnessione: 'Connessione persa, mi ricollego…', errore: 'Gioco online non disponibile (serve internet).',
+    piena: 'Questa partita ha già due giocatori: chiedi un nuovo codice.',
   };
   const other = (c) => (c === 'w' ? 'b' : 'w');
 
@@ -1001,7 +1002,8 @@
           Online.send(Object.assign({ t: 'sync' }, snapshot())); // non torna qualcosa: ci si rimette d'accordo
           return;
         }
-        const done = g.move({ from: String(msg.m.from), to: String(msg.m.to), promotion: msg.m.promotion || undefined });
+        const promo = ['q', 'r', 'b', 'n'].includes(msg.m.promotion) ? msg.m.promotion : undefined;
+        const done = g.move({ from: String(msg.m.from), to: String(msg.m.to), promotion: promo });
         if (!done) { Online.send(Object.assign({ t: 'sync' }, snapshot())); return; }
         state.selected = null;
         state.targets = [];
@@ -1022,11 +1024,18 @@
         if ((msg.n | 0) > o.n) adopt({ n: msg.n, white: msg.white, moves: [] });
         break;
       }
+      case 'full': {
+        Online.leave();
+        o.net = 'piena';
+        render();
+        break;
+      }
     }
   }
 
   function connectOnline() {
     const o = state.online;
+    if (o.role === 'guest' && !o.token) o.token = Online.newCode() + Online.newCode() + Online.newCode();
     o.net = 'apertura';
     Online.open(o.role, o.code, {
       onStatus: (s) => {
@@ -1037,7 +1046,8 @@
       },
       onConnect: () => { if (state.online === o) Online.send(Object.assign({ t: 'sync' }, snapshot())); },
       onMessage: onlineMessage,
-    });
+      onToken: (t) => { if (state.online === o) { o.token = t; save(); } },
+    }, o.token);
   }
 
   // role: 'host' (crea) o 'guest' (entra con il codice)
@@ -1134,7 +1144,7 @@
     try {
       const data = {
         mode: state.mode, human: state.human, level: state.level, flipped: state.flipped,
-        online: state.online && { role: state.online.role, code: state.online.code, white: state.online.white, n: state.online.n, resign: state.online.resign || null, met: !!state.online.met },
+        online: state.online && { role: state.online.role, code: state.online.code, white: state.online.white, n: state.online.n, resign: state.online.resign || null, met: !!state.online.met, token: state.online.token || null },
         moves: state.game.history.map(m => ({ from: m.from, to: m.to, promotion: m.promotion })),
       };
       localStorage.setItem(SAVE_KEY, JSON.stringify(data));
@@ -1156,7 +1166,7 @@
       state.online = null;
       if (state.mode === 'online') {
         const o = data.online;
-        state.online = { role: o.role === 'host' ? 'host' : 'guest', code: String(o.code), white: o.white || null, n: o.n | 0, resign: o.resign || null, met: !!o.met, net: 'apertura' };
+        state.online = { role: o.role === 'host' ? 'host' : 'guest', code: String(o.code), white: o.white || null, n: o.n | 0, resign: o.resign || null, met: !!o.met, token: typeof o.token === 'string' ? o.token : null, net: 'apertura' };
         if (state.online.resign) state.over = resignOver(state.online.resign);
       }
       return true;
