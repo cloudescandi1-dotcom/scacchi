@@ -943,7 +943,8 @@
 
   // ---------- Partita online con un amico ----------
   const NET_TEXT = {
-    apertura: 'Mi collego…', attesa: 'In attesa dell\'amico…', assente: 'L\'amico non è collegato: aspetto…',
+    apertura: 'Mi collego al server…', cerco: 'Cerco la partita dell\'amico…', attesa: 'In attesa dell\'amico…',
+    assente: 'L\'amico non ha il gioco aperto: aspetto…',
     riconnessione: 'Connessione persa, mi ricollego…', errore: 'Gioco online non disponibile (serve internet).',
   };
   const other = (c) => (c === 'w' ? 'b' : 'w');

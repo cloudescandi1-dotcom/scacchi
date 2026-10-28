@@ -81,10 +81,21 @@
 
   function connect() {
     if (closed || !peer || peer.destroyed || !peer.open) { later(start, 2000); return; }
+    status('cerco');
     const c = peer.connect(PREFIX + code, { reliable: true, serialization: 'json' });
     setup(c);
-    // Se dopo un po' non si è aperta, si riprova
-    setTimeout(() => { if (!closed && conn !== c) { try { c.close(); } catch (e) { /* già chiusa */ } if (!conn) connect(); } }, 12000);
+    // Se dopo un po' non si è aperta, si ricomincia da capo (nuovo collegamento al server)
+    setTimeout(() => { if (!closed && conn !== c) { try { c.close(); } catch (e) { /* già chiusa */ } if (!conn) start(); } }, 10000);
+  }
+
+  // Quando si torna nell'app (il telefono l'aveva "addormentata") si rifà il collegamento da capo
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible' || closed) return;
+      if (conn && conn.open) { conn.send({ t: 'ping' }); return; }
+      clearTimeout(timer);
+      start();
+    });
   }
 
   function start() {
