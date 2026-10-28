@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <title>Scacchi</title>
-  <meta name="description" content="Gioco degli scacchi: due giocatori o contro il computer.">
+  <meta name="description" content="Gioco degli scacchi: contro il computer, in due o online con un amico.">
   <meta name="theme-color" content="#2f2a25">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png" type="image/png">
@@ -31,6 +31,9 @@
       <button id="btn-flip" type="button" title="Gira la scacchiera">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></svg><span>Gira</span>
       </button>
+      <button id="btn-style" type="button" title="Scacchiera e pezzi">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.1-4-7.6-9-7.6z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7.2" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/></svg><span>Stile</span>
+      </button>
     </nav>
   </header>
 
@@ -55,6 +58,14 @@
           <button id="btn-suggest" type="button" class="suggest" title="Mostra una buona mossa">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>
             <span>Suggerimento</span>
+          </button>
+          <button id="btn-invite" type="button" class="suggest invite" title="Codice da mandare all'amico" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11a4 4 0 1 0-8 0M12 3v4M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>
+            <span>Invita</span>
+          </button>
+          <button id="btn-resign" type="button" class="suggest resign" title="Arrenditi" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>
+            <span>Arrenditi</span>
           </button>
         </div>
         <ol id="moves" class="moves"></ol>
@@ -91,16 +102,29 @@
         <legend>Modalità</legend>
         <label class="choice"><input type="radio" name="mode" value="cpu" checked> Contro il computer</label>
         <label class="choice"><input type="radio" name="mode" value="pvp"> Due giocatori (stesso dispositivo)</label>
+        <label class="choice"><input type="radio" name="mode" value="online"> Con un amico online</label>
       </fieldset>
 
-      <div id="cpu-options">
+      <div id="online-options">
+        <fieldset>
+          <legend>Partita online</legend>
+          <label class="choice"><input type="radio" name="how" value="create" checked> Crea una partita e invita un amico</label>
+          <label class="choice"><input type="radio" name="how" value="join"> Ho un codice: entro nella partita</label>
+          <input id="join-code" name="code" class="code-input" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" maxlength="60" placeholder="Codice, es. K7QX2M">
+          <p id="join-error" class="form-error" hidden>Il codice ha 6 lettere o numeri. Controlla e riprova.</p>
+        </fieldset>
+      </div>
+
+      <div id="color-options">
         <fieldset>
           <legend>Giochi con</legend>
           <label class="choice"><input type="radio" name="color" value="w" checked> Bianco</label>
           <label class="choice"><input type="radio" name="color" value="b"> Nero</label>
           <label class="choice"><input type="radio" name="color" value="r"> A caso</label>
         </fieldset>
+      </div>
 
+      <div id="level-options">
         <fieldset>
           <legend>Livello</legend>
           <select name="level" id="sel-level">
@@ -138,7 +162,7 @@
       <p id="over-text"></p>
       <div class="dialog-buttons">
         <button value="close" type="submit" class="secondary">Guarda la scacchiera</button>
-        <button value="new" type="submit" class="primary">Nuova partita</button>
+        <button value="new" type="submit" class="primary" id="btn-over-new">Nuova partita</button>
       </div>
     </form>
   </dialog>
@@ -154,6 +178,62 @@
     </form>
   </dialog>
 
+  <!-- Finestra: invita un amico -->
+  <dialog id="dlg-invite">
+    <form method="dialog">
+      <h2>Invita un amico</h2>
+      <p>Manda questo codice (o il link) al tuo amico. Quando entra, la partita comincia.</p>
+      <div id="invite-code" class="invite-code"></div>
+      <div id="invite-link" class="invite-link"></div>
+      <p id="invite-copied" class="copied" hidden>Link copiato!</p>
+      <div class="dialog-buttons">
+        <button type="button" class="secondary" id="btn-copy">Copia link</button>
+        <button type="button" class="secondary" id="btn-share">Condividi</button>
+        <button value="close" type="submit" class="primary">Fatto</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Finestra: entrare da un link d'invito -->
+  <dialog id="dlg-join">
+    <form method="dialog">
+      <h2>Partita online</h2>
+      <p id="join-text"></p>
+      <div class="dialog-buttons">
+        <button value="no" type="submit" class="secondary">No</button>
+        <button value="yes" type="submit" class="primary">Entra</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Finestra: arrendersi -->
+  <dialog id="dlg-resign">
+    <form method="dialog">
+      <h2>Vuoi arrenderti?</h2>
+      <p>La partita finisce e vince il tuo amico.</p>
+      <div class="dialog-buttons">
+        <button value="no" type="submit" class="secondary">Continua a giocare</button>
+        <button value="yes" type="submit" class="danger">Mi arrendo</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Finestra: scacchiera e pezzi -->
+  <dialog id="dlg-style">
+    <form method="dialog">
+      <h2>Stile</h2>
+      <h3 class="style-title">Scacchiera</h3>
+      <div id="style-boards" class="style-grid"></div>
+      <h3 class="style-title">Pezzi</h3>
+      <div id="style-pieces" class="style-grid"></div>
+      <div class="dialog-buttons">
+        <button value="close" type="submit" class="primary">Fatto</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="js/peerjs.min.js"></script>
+  <script src="js/online.js"></script>
   <script src="js/chess.js"></script>
   <script src="js/ai.js"></script>
   <script src="js/lessons.js"></script>

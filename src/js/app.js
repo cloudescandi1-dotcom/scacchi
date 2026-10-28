@@ -13,11 +13,35 @@
   const VALUE = { p: 1, n: 3, b: 3, r: 5, q: 9 };
   const PRAISE = ['Bravo!', 'Ottimo!', 'Perfetto!', 'Esatto!', 'Benissimo!'];
   const HINT_LEVEL = 4; // forza del computer quando dà suggerimenti
+  const STYLE_KEY = 'scacchi-stile-v1';
+
+  // ---------- Personalizzazione: scacchiere e pezzi ----------
+  const BOARDS = [
+    { id: 'legno', name: 'Legno', light: '#f0d9b5', dark: '#b58863' },
+    { id: 'torneo', name: 'Torneo', light: '#eeeed2', dark: '#769656' },
+    { id: 'mare', name: 'Mare', light: '#dee3e6', dark: '#8ca2ad' },
+    { id: 'noce', name: 'Noce', light: '#e3c08d', dark: '#8a5a2e' },
+    { id: 'marmo', name: 'Marmo', light: '#ecebe6', dark: '#9c978f' },
+    { id: 'notte', name: 'Notte', light: '#c7cede', dark: '#4d5b7c' },
+    { id: 'corallo', name: 'Corallo', light: '#f6e3dc', dark: '#d07c6c' },
+    { id: 'viola', name: 'Ametista', light: '#e7def0', dark: '#8a6aa8' },
+  ];
+  // Colori dei pezzi: corpo (un colore o una sfumatura [chiaro, scuro]), contorno e dettagli
+  const PIECE_SETS = [
+    { id: 'classici', name: 'Classici' },
+    { id: 'legno', name: 'Legno', w: { body: ['#fbe7bf', '#e0b97a'], line: '#5a3a1a' }, b: { body: ['#8a5530', '#4e2b12'], line: '#24120a', detail: '#f3d9a4' } },
+    { id: 'oro', name: 'Oro e acciaio', w: { body: ['#fff0a8', '#e0a92e'], line: '#5c3f00' }, b: { body: ['#6f8296', '#2e3b4b'], line: '#10161e', detail: '#dfe8f2' } },
+    { id: 'marmo', name: 'Marmo', w: { body: ['#ffffff', '#d9d6cf'], line: '#3c3a36' }, b: { body: ['#55555f', '#1e1e24'], line: '#000000', detail: '#c9c9cf' } },
+    { id: 'pop', name: 'Rosso e blu', w: { body: ['#ffb0a3', '#e2503c'], line: '#4a120a' }, b: { body: ['#5d8fe0', '#1f4a9a'], line: '#0b1a38', detail: '#e2ecff' } },
+    { id: 'giada', name: 'Giada e rubino', w: { body: ['#c8f2d8', '#3fae72'], line: '#0d3a22' }, b: { body: ['#d0475a', '#7a1426'], line: '#2a0510', detail: '#ffd9df' } },
+  ];
+  const style = { board: 'legno', pieces: 'classici' };
+  let pieceUrls = null; // disegni ricolorati del set scelto (null = originali)
 
   // ---------- Stato del gioco ----------
   const state = {
     game: new Chess(),
-    mode: 'cpu',      // 'cpu' = contro il computer, 'pvp' = due giocatori
+    mode: 'cpu',      // 'cpu' = contro il computer, 'pvp' = due giocatori, 'online' = con un amico online
     human: 'w',       // colore del giocatore umano (modalità cpu)
     level: 2,
     flipped: false,   // scacchiera vista dal Nero
@@ -29,6 +53,7 @@
     over: null,       // risultato se la partita è finita
     hint: null,       // mossa suggerita da evidenziare { from, to }
     learn: null,      // stato della modalità Impara (null = partita normale)
+    online: null,     // partita online: { role: 'host'|'guest', code, white: 'host'|'guest'|null, n, net, resign }
   };
 
   // ---------- Elementi della pagina ----------
@@ -38,8 +63,82 @@
   const movesEl = $('moves');
   const squares = []; // 64 caselle, in ordine di visualizzazione
 
-  function pieceSrc(p) {
+  function pieceFile(p) {
     return 'pieces/' + (p < 'a' ? 'w' : 'b') + p.toUpperCase() + '.svg';
+  }
+
+  function pieceSrc(p) {
+    return (pieceUrls && pieceUrls[p]) || pieceFile(p);
+  }
+
+  // Ricolora un disegno dei pezzi cambiando i colori dentro il file SVG
+  function recolor(svg, isWhite, c) {
+    const body = Array.isArray(c.body) ? 'url(#g)' : c.body;
+    let out = isWhite
+      ? svg.replace(/fill="#fff"/g, `fill="${body}"`).replace(/#000/g, c.line)
+      : svg.replace(/fill="#000"/g, `fill="${body}"`).replace(/stroke="#000"/g, `stroke="${c.line}"`).replace(/#ececec/g, c.detail);
+    // Alcune parti non scrivono il colore e sarebbero nere "per default": si dà un colore di base a tutto il disegno
+    out = out.replace('<svg ', `<svg fill="${isWhite ? c.line : body}" `);
+    if (Array.isArray(c.body)) {
+      const defs = `<defs><linearGradient id="g" x1="0" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="${c.body[0]}"/><stop offset="1" stop-color="${c.body[1]}"/></linearGradient></defs>`;
+      out = out.replace(/(<svg[^>]*>)/, '$1' + defs);
+    }
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(out);
+  }
+
+  async function piecesFor(set) {
+    if (!set.w) return null;
+    const urls = {};
+    await Promise.all('KQRBNPkqrbnp'.split('').map(async (p) => {
+      const svg = await (await fetch(pieceFile(p))).text();
+      urls[p] = recolor(svg, p < 'a', p < 'a' ? set.w : set.b);
+    }));
+    return urls;
+  }
+
+  async function applyStyle() {
+    const b = BOARDS.find(x => x.id === style.board) || BOARDS[0];
+    document.documentElement.style.setProperty('--light', b.light);
+    document.documentElement.style.setProperty('--dark', b.dark);
+    const set = PIECE_SETS.find(x => x.id === style.pieces) || PIECE_SETS[0];
+    try { pieceUrls = await piecesFor(set); } catch (err) { pieceUrls = null; } // senza file (doppio clic): pezzi classici
+    render();
+  }
+
+  function loadStyle() {
+    try { Object.assign(style, JSON.parse(localStorage.getItem(STYLE_KEY)) || {}); } catch (err) { /* stile di base */ }
+  }
+
+  function saveStyle() {
+    try { localStorage.setItem(STYLE_KEY, JSON.stringify(style)); } catch (err) { /* pazienza */ }
+  }
+
+  function openStyleDialog() {
+    const boards = $('style-boards');
+    boards.innerHTML = '';
+    for (const b of BOARDS) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'style-item' + (b.id === style.board ? ' on' : '');
+      btn.innerHTML = `<span class="mini" style="--l:${b.light};--d:${b.dark}"><i></i><i></i><i></i><i></i></span><span>${b.name}</span>`;
+      btn.addEventListener('click', () => { style.board = b.id; saveStyle(); applyStyle(); openStyleDialog(); });
+      boards.appendChild(btn);
+    }
+    const sets = $('style-pieces');
+    sets.innerHTML = '';
+    for (const set of PIECE_SETS) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'style-item' + (set.id === style.pieces ? ' on' : '');
+      btn.innerHTML = `<span class="mini-pieces"></span><span>${set.name}</span>`;
+      piecesFor(set).catch(() => null).then((urls) => {
+        const src = (p) => (urls && urls[p]) || pieceFile(p);
+        btn.querySelector('.mini-pieces').innerHTML = `<img src="${src('N')}" alt=""><img src="${src('q')}" alt="">`;
+      });
+      btn.addEventListener('click', () => { style.pieces = set.id; saveStyle(); applyStyle(); openStyleDialog(); });
+      sets.appendChild(btn);
+    }
+    if (!$('dlg-style').open) $('dlg-style').showModal();
   }
 
   function buildBoard() {
@@ -101,13 +200,23 @@
       renderPlayers();
       renderStatus();
       renderMoves();
-      $('btn-undo').disabled = g.history.length === 0;
+      const online = state.mode === 'online';
+      $('btn-undo').disabled = g.history.length === 0 || online;
+      $('btn-suggest').hidden = online;
       $('btn-suggest').disabled = !humanCanMove() || state.suggesting;
+      $('btn-invite').hidden = !online;
+      $('btn-resign').hidden = !online;
+      $('btn-resign').disabled = !online || !!state.over || !state.online.white;
     }
   }
 
   function playerName(color) {
     if (state.mode === 'pvp') return COLOR_NAME[color];
+    if (state.mode === 'online') {
+      if (!state.online.white) return color === 'w' ? 'Tu' : 'Amico';
+      if (color === state.human) return 'Tu (' + COLOR_NAME[color] + ')';
+      return 'Amico (' + COLOR_NAME[color] + ')' + (state.online.net === 'collegato' ? '' : ' · non collegato');
+    }
     if (color === state.human) return 'Tu (' + COLOR_NAME[color] + ')';
     return 'Computer · livello ' + state.level;
   }
@@ -141,6 +250,7 @@
       case 'insufficient': return ['Patta', 'Materiale insufficiente: nessuno può più dare scacco matto.'];
       case 'threefold': return ['Patta', 'La stessa posizione si è ripetuta tre volte.'];
       case 'fifty': return ['Patta', 'Regola delle 50 mosse: nessuna cattura né mossa di pedone.'];
+      case 'resign': return ['Partita abbandonata', 'Il ' + COLOR_NAME[over.winner === 'w' ? 'b' : 'w'] + ' si è arreso: vince il ' + COLOR_NAME[over.winner] + '.'];
       default: return ['Partita finita', ''];
     }
   }
@@ -158,10 +268,16 @@
       text = 'Cerco una buona mossa…';
     } else if (state.hint) {
       text = 'Suggerimento: muovi da ' + state.hint.from + ' a ' + state.hint.to;
+    } else if (state.mode === 'online' && !state.online.white) {
+      text = NET_TEXT[state.online.net] || 'Mi collego alla partita…';
+    } else if (state.mode === 'online' && state.online.net !== 'collegato' && g.turn !== state.human) {
+      text = state.online.role === 'host' && !state.online.met ? 'Aspetto che l\'amico entri (codice ' + state.online.code + ')' : 'L\'amico non è collegato: aspetto che torni…';
     } else {
       const who = state.mode === 'cpu'
         ? (g.turn === state.human ? 'Tocca a te' : 'Tocca al computer')
-        : 'Tocca al ' + COLOR_NAME[g.turn];
+        : state.mode === 'online'
+          ? (g.turn === state.human ? 'Tocca a te' : 'Tocca all\'amico')
+          : 'Tocca al ' + COLOR_NAME[g.turn];
       check = g.inCheck();
       text = check ? 'Scacco! ' + who : who;
     }
@@ -202,6 +318,7 @@
       return s.goal !== 'line' || state.game.turn === s.side;
     }
     if (state.over || state.thinking) return false;
+    if (state.mode === 'online' && !state.online.white) return false;
     return state.mode === 'pvp' || state.game.turn === state.human;
   }
 
@@ -252,6 +369,9 @@
     state.targets = [];
     state.hint = null;
     if (!done) { render(); return; }
+    if (state.mode === 'online' && !state.learn) {
+      Online.send({ t: 'move', n: state.online.n, ply: state.game.history.length - 1, m: { from: done.from, to: done.to, promotion: done.promotion || null } });
+    }
     if (state.learn) learnAfterMove(done);
     else afterMove();
   }
@@ -438,6 +558,7 @@
   // ---------- Pulsanti ----------
   function undo() {
     if (state.learn) { loadStep(); return; } // nelle lezioni: ricomincia l'esercizio
+    if (state.mode === 'online') return;   // online non si annulla: l'amico ha già visto la mossa
     const g = state.game;
     if (!g.history.length) return;
     cancelComputer();
@@ -465,6 +586,7 @@
 
   function newGame(opts) {
     cancelComputer();
+    stopOnline();
     state.learn = null;
     state.game = new Chess();
     state.mode = opts.mode;
@@ -487,6 +609,7 @@
 
   function startLesson(index) {
     cancelComputer();
+    if (state.mode === 'online') Online.leave(); // si riprende uscendo dalle lezioni
     endDrag();
     closeDialog($('dlg-over'));
     state.learn = { lesson: index, step: 0, token: 0 };
@@ -748,6 +871,7 @@
       state.over = null;
     }
     render();
+    resumeOnline();
     maybeComputerMove();
   }
 
@@ -759,6 +883,8 @@
   function openNewGameDialog() {
     const form = $('form-new');
     form.mode.value = state.mode;
+    form.how.value = 'create';
+    form.code.value = '';
     form.color.value = state.human;
     form.level.value = String(state.level);
     updateCpuOptions();
@@ -767,7 +893,13 @@
   }
 
   function updateCpuOptions() {
-    $('cpu-options').hidden = $('form-new').mode.value !== 'cpu';
+    const f = $('form-new');
+    const mode = f.mode.value, join = f.how.value === 'join';
+    $('color-options').hidden = !(mode === 'cpu' || (mode === 'online' && !join));
+    $('level-options').hidden = mode !== 'cpu';
+    $('online-options').hidden = mode !== 'online';
+    $('join-code').hidden = !join;
+    $('join-error').hidden = true;
   }
 
   function askPromotion(color) {
@@ -799,10 +931,200 @@
     if (state.mode === 'cpu' && state.over.winner) {
       extra = state.over.winner === state.human ? ' Complimenti, hai vinto!' : ' Ha vinto il computer.';
     }
+    if (state.mode === 'online' && state.over.winner) {
+      extra = state.over.winner === state.human ? ' Complimenti, hai vinto!' : ' Ha vinto il tuo amico.';
+    }
+    $('btn-over-new').textContent = state.mode === 'online' ? 'Rivincita' : 'Nuova partita';
     $('over-title').textContent = title;
     $('over-text').textContent = text + extra + ' (' + state.over.result + ')';
     $('dlg-over').returnValue = '';
     $('dlg-over').showModal();
+  }
+
+  // ---------- Partita online con un amico ----------
+  const NET_TEXT = {
+    apertura: 'Mi collego…', attesa: 'In attesa dell\'amico…', assente: 'L\'amico non è collegato: aspetto…',
+    riconnessione: 'Connessione persa, mi ricollego…', errore: 'Gioco online non disponibile (serve internet).',
+  };
+  const other = (c) => (c === 'w' ? 'b' : 'w');
+
+  function inviteLink(code) {
+    return location.origin + location.pathname + '?partita=' + code;
+  }
+
+  function resignOver(color) {
+    const winner = other(color);
+    return { reason: 'resign', winner, result: winner === 'w' ? '1-0' : '0-1' };
+  }
+
+  // Situazione da mandare all'amico
+  function snapshot() {
+    const o = state.online;
+    return { n: o.n, white: o.white, over: o.resign || null, moves: state.game.history.map(m => ({ from: m.from, to: m.to, promotion: m.promotion || null })) };
+  }
+
+  // Prende la situazione ricevuta (o una nuova partita) e la mostra
+  function adopt(s) {
+    const o = state.online;
+    const wasOver = !!state.over;
+    const g = new Chess();
+    for (const m of s.moves) if (!g.move(m)) break;
+    state.game = g;
+    o.n = s.n | 0;
+    o.white = s.white === 'guest' ? 'guest' : 'host';
+    o.resign = s.over === 'w' || s.over === 'b' ? s.over : null;
+    const mine = o.white === o.role ? 'w' : 'b';
+    if (state.human !== mine || !g.history.length) state.flipped = mine === 'b';
+    state.human = mine;
+    state.selected = null;
+    state.targets = [];
+    state.over = o.resign ? resignOver(o.resign) : g.gameOver();
+    if (!state.over) closeDialog($('dlg-over'));
+    save();
+    render();
+    if (state.over && !wasOver) setTimeout(showGameOver, 350);
+  }
+
+  function onlineMessage(msg) {
+    const o = state.online;
+    if (!o || state.learn) return;
+    switch (msg.t) {
+      case 'sync': {
+        const merged = Online.mergeSync(snapshot(), msg, o.role === 'host');
+        if (merged) adopt(merged);
+        break;
+      }
+      case 'move': {
+        const g = state.game;
+        if (msg.n !== o.n || msg.ply !== g.history.length || g.turn === state.human || state.over || !msg.m) {
+          Online.send(Object.assign({ t: 'sync' }, snapshot())); // non torna qualcosa: ci si rimette d'accordo
+          return;
+        }
+        const done = g.move({ from: String(msg.m.from), to: String(msg.m.to), promotion: msg.m.promotion || undefined });
+        if (!done) { Online.send(Object.assign({ t: 'sync' }, snapshot())); return; }
+        state.selected = null;
+        state.targets = [];
+        state.hint = null;
+        afterMove();
+        break;
+      }
+      case 'resign': {
+        if (msg.n !== o.n || state.over) return;
+        o.resign = other(state.human);
+        state.over = resignOver(o.resign);
+        save();
+        render();
+        setTimeout(showGameOver, 350);
+        break;
+      }
+      case 'new': {
+        if ((msg.n | 0) > o.n) adopt({ n: msg.n, white: msg.white, moves: [] });
+        break;
+      }
+    }
+  }
+
+  function connectOnline() {
+    const o = state.online;
+    o.net = 'apertura';
+    Online.open(o.role, o.code, {
+      onStatus: (s) => {
+        if (state.online !== o) return;
+        o.net = s;
+        if (s === 'collegato' && !o.met) { o.met = true; save(); closeDialog($('dlg-invite')); }
+        render();
+      },
+      onConnect: () => { if (state.online === o) Online.send(Object.assign({ t: 'sync' }, snapshot())); },
+      onMessage: onlineMessage,
+    });
+  }
+
+  // role: 'host' (crea) o 'guest' (entra con il codice)
+  function startOnline(role, code, color) {
+    cancelComputer();
+    closeDialog($('dlg-over'));
+    state.learn = null;
+    state.game = new Chess();
+    state.mode = 'online';
+    const pick = color === 'r' ? (Math.random() < 0.5 ? 'w' : 'b') : color;
+    state.online = { role, code, n: role === 'host' ? 1 : 0, white: role === 'host' ? (pick === 'w' ? 'host' : 'guest') : null, net: 'apertura', resign: null, met: false };
+    state.human = role === 'host' ? pick : 'w';
+    state.flipped = state.human === 'b';
+    state.over = null;
+    state.selected = null;
+    state.targets = [];
+    state.hint = null;
+    save();
+    render();
+    connectOnline();
+    if (role === 'host') openInvite();
+  }
+
+  function resumeOnline() {
+    if (state.mode === 'online' && state.online && !state.learn) connectOnline();
+  }
+
+  function stopOnline() {
+    if (state.online) Online.leave();
+    state.online = null;
+  }
+
+  function resign() {
+    const o = state.online;
+    if (!o || state.over || !o.white) return;
+    o.resign = state.human;
+    state.over = resignOver(o.resign);
+    Online.send({ t: 'resign', n: o.n });
+    save();
+    render();
+    setTimeout(showGameOver, 350);
+  }
+
+  // Rivincita: nuova partita con i colori scambiati
+  function rematch() {
+    const o = state.online;
+    const s = { n: o.n + 1, white: o.white === 'host' ? 'guest' : 'host', moves: [] };
+    Online.send({ t: 'new', n: s.n, white: s.white });
+    adopt(s);
+  }
+
+  function openInvite() {
+    const code = state.online.code;
+    $('invite-code').textContent = code;
+    $('invite-link').textContent = inviteLink(code);
+    $('invite-copied').hidden = true;
+    $('btn-share').hidden = !navigator.share;
+    if (!$('dlg-invite').open) $('dlg-invite').showModal();
+  }
+
+  async function copyInvite() {
+    try {
+      await navigator.clipboard.writeText(inviteLink(state.online.code));
+      $('invite-copied').hidden = false;
+    } catch (err) {
+      // Copia non permessa: si seleziona il testo così l'utente lo copia a mano
+      const range = document.createRange();
+      range.selectNodeContents($('invite-link'));
+      const sel = getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+
+  function shareInvite() {
+    navigator.share({ title: 'Scacchi', text: 'Giochiamo a scacchi! Codice partita: ' + state.online.code, url: inviteLink(state.online.code) }).catch(() => {});
+  }
+
+  // Aperto un link d'invito (…?partita=CODICE): si chiede se entrare
+  function checkInviteLink() {
+    const code = Online.cleanCode(location.search);
+    if (!code) return;
+    history.replaceState(null, '', location.pathname);
+    if (state.online && state.online.code === code) return; // è già la partita in corso
+    $('join-text').textContent = 'Un amico ti ha invitato alla partita ' + code + '. Vuoi entrare? La partita in corso su questo dispositivo verrà chiusa.';
+    $('dlg-join').returnValue = '';
+    $('dlg-join').dataset.code = code;
+    $('dlg-join').showModal();
   }
 
   // ---------- Salvataggio automatico (resta anche chiudendo l'app) ----------
@@ -811,6 +1133,7 @@
     try {
       const data = {
         mode: state.mode, human: state.human, level: state.level, flipped: state.flipped,
+        online: state.online && { role: state.online.role, code: state.online.code, white: state.online.white, n: state.online.n, resign: state.online.resign || null, met: !!state.online.met },
         moves: state.game.history.map(m => ({ from: m.from, to: m.to, promotion: m.promotion })),
       };
       localStorage.setItem(SAVE_KEY, JSON.stringify(data));
@@ -824,11 +1147,17 @@
       const g = new Chess();
       for (const m of data.moves) if (!g.move(m)) break;
       state.game = g;
-      state.mode = data.mode === 'pvp' ? 'pvp' : 'cpu';
+      state.mode = ['pvp', 'online'].includes(data.mode) && (data.mode !== 'online' || data.online) ? data.mode : 'cpu';
       state.human = data.human === 'b' ? 'b' : 'w';
       state.level = Math.min(5, Math.max(1, Number(data.level) || 2));
       state.flipped = !!data.flipped;
       state.over = g.gameOver();
+      state.online = null;
+      if (state.mode === 'online') {
+        const o = data.online;
+        state.online = { role: o.role === 'host' ? 'host' : 'guest', code: String(o.code), white: o.white || null, n: o.n | 0, resign: o.resign || null, met: !!o.met, net: 'apertura' };
+        if (state.online.resign) state.over = resignOver(state.online.resign);
+      }
       return true;
     } catch (err) {
       return false;
@@ -849,6 +1178,15 @@
     $('btn-undo').addEventListener('click', undo);
     $('btn-flip').addEventListener('click', flip);
     $('btn-suggest').addEventListener('click', suggest);
+    $('btn-style').addEventListener('click', openStyleDialog);
+    $('btn-invite').addEventListener('click', openInvite);
+    $('btn-resign').addEventListener('click', () => { $('dlg-resign').returnValue = ''; $('dlg-resign').showModal(); });
+    $('dlg-resign').addEventListener('close', () => { if ($('dlg-resign').returnValue === 'yes') resign(); });
+    $('btn-copy').addEventListener('click', copyInvite);
+    $('btn-share').addEventListener('click', shareInvite);
+    $('dlg-join').addEventListener('close', () => {
+      if ($('dlg-join').returnValue === 'yes') startOnline('guest', $('dlg-join').dataset.code, 'w');
+    });
 
     $('btn-lessons').addEventListener('click', openLessonsDialog);
     $('btn-exit-learn').addEventListener('click', exitLearn);
@@ -858,17 +1196,35 @@
 
     const form = $('form-new');
     form.addEventListener('change', updateCpuOptions);
+    form.addEventListener('submit', (e) => {
+      // Codice sbagliato: la finestra resta aperta e lo dice
+      if (e.submitter && e.submitter.value === 'ok' && form.mode.value === 'online' && form.how.value === 'join' && !Online.cleanCode(form.code.value)) {
+        e.preventDefault();
+        $('join-error').hidden = false;
+      }
+    });
     $('dlg-new').addEventListener('close', () => {
       if ($('dlg-new').returnValue !== 'ok') return;
+      if (form.mode.value === 'online') {
+        if (form.how.value === 'join') startOnline('guest', Online.cleanCode(form.code.value), 'w');
+        else { stopOnline(); startOnline('host', Online.newCode(), form.color.value); }
+        return;
+      }
       newGame({ mode: form.mode.value, color: form.color.value, level: Number(form.level.value) });
     });
     $('dlg-over').addEventListener('close', () => {
-      if ($('dlg-over').returnValue === 'new') openNewGameDialog();
+      if ($('dlg-over').returnValue !== 'new') return;
+      if (state.mode === 'online') rematch();
+      else openNewGameDialog();
     });
 
+    loadStyle();
     const resumed = load();
     render();
-    if (!resumed) openNewGameDialog();
+    applyStyle();
+    resumeOnline();
+    if (location.search.includes('partita=')) checkInviteLink();
+    else if (!resumed) openNewGameDialog();
     else maybeComputerMove(); // se era il turno del computer quando l'app è stata chiusa
 
     // Funzionamento offline / installazione (solo se servito da un indirizzo web)

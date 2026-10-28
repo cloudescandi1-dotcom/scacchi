@@ -291,6 +291,40 @@ select {
 .promo-choices button:hover { background: #ffe9c6; }
 .promo-choices img { width: 100%; height: 100%; display: block; }
 
+/* ---------- Partita online ---------- */
+.suggest.invite { background: var(--bg-panel); color: var(--text); }
+.suggest.resign { background: #6b3a33; color: #ffd9d2; }
+.code-input {
+  width: 100%; margin-top: 6px; padding: 10px 12px; border-radius: 8px; font: inherit; font-size: 1.1rem;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  background: var(--bg-raised); color: var(--text); border: 1px solid #5a5148;
+}
+.form-error { color: #ffb4a6 !important; margin: 6px 0 0 !important; font-size: 0.9rem; }
+.invite-code {
+  font-size: 2.2rem; font-weight: 800; letter-spacing: 0.25em; text-align: center;
+  padding: 12px 0 12px 0.25em; margin-bottom: 8px; border-radius: 10px; background: var(--bg-raised); user-select: all;
+}
+.invite-link { font-size: 0.8rem; color: var(--text-dim); word-break: break-all; text-align: center; margin-bottom: 8px; user-select: all; }
+.copied { color: #b9e08a !important; text-align: center; margin: 0 0 8px !important; }
+.danger { background: var(--danger); color: #fff; }
+.dialog-buttons { flex-wrap: wrap; }
+
+/* ---------- Finestra Stile ---------- */
+#dlg-style { max-height: 90dvh; width: min(440px, calc(100vw - 32px)); }
+.style-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin: 10px 0 8px; }
+.style-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.style-item {
+  display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 4px;
+  border: 2px solid transparent; border-radius: 10px; background: var(--bg-raised); font-size: 0.78rem;
+}
+.style-item.on { border-color: var(--accent); }
+.mini { width: 44px; height: 44px; display: grid; grid-template-columns: 1fr 1fr; border-radius: 4px; overflow: hidden; }
+.mini i:nth-child(1), .mini i:nth-child(4) { background: var(--l); }
+.mini i:nth-child(2), .mini i:nth-child(3) { background: var(--d); }
+.mini-pieces { height: 44px; display: flex; align-items: center; justify-content: center; padding: 0 2px; border-radius: 4px; background: linear-gradient(90deg, var(--light) 50%, var(--dark) 50%); }
+.mini-pieces img { width: 30px; height: 30px; }
+@media (max-width: 400px) { .style-grid { grid-template-columns: repeat(3, 1fr); } }
+
 /* ---------- Schermi larghi e orizzontali (PC, iPad in orizzontale): mosse a destra ----------
    Sta in fondo al file così vince sulle regole scritte sopra. */
 @media (min-width: 760px) and (min-aspect-ratio: 5/4) {

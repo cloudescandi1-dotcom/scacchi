@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "node tools/server.js",
-    "test": "node --test tests/chess.test.js tests/ai.test.js tests/lessons.test.js",
+    "test": "node --test tests/chess.test.js tests/ai.test.js tests/lessons.test.js tests/online.test.js",
     "icons": "node tools/make-icons.js"
   },
   "license": "SEE LICENSE IN LICENSE"

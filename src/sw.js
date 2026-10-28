@@ -1,12 +1,14 @@
 // Service worker: salva i file del gioco nel dispositivo, così funziona anche offline.
 // Se aggiungi o rinomini file, aggiorna l'elenco e aumenta il numero di versione.
-const CACHE = 'scacchi-v4';
+const CACHE = 'scacchi-v5';
 
 const FILES = [
   './',
   'index.html',
   'style.css',
   'manifest.webmanifest',
+  'js/peerjs.min.js',
+  'js/online.js',
   'js/chess.js',
   'js/ai.js',
   'js/lessons.js',

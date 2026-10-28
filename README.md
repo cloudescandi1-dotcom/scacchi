@@ -6,15 +6,23 @@ Gioco di scacchi per **telefono, PC e iPad**, fatto come web app installabile (P
 
 **Gioca online:** https://cloudescandi1-dotcom.github.io/scacchi/
 
-## Stato (27/10/2026)
+## Stato (28/10/2026)
+- ✅ Versione 1.2: **partita online con un amico** e **stile** di scacchiera e pezzi
 - ✅ Versione 1.1 della PWA: aggiunta la modalità **Impara** e il pulsante **Suggerimento**
 - ✅ Pubblicato su GitHub Pages: si aggiorna da solo a ogni `git push`
-- ✅ 43 test automatici superati (regole verificate con i "perft" ufficiali, tutte le lezioni risolvibili)
+- ✅ 48 test automatici superati (regole verificate con i "perft" ufficiali, tutte le lezioni risolvibili)
 - ⏳ Versione Flutter (app da store): da fare, serve prima installare Flutter
 
 ## Cosa sa fare
 - Tutte le regole: scacco, scacco matto, stallo, arrocco, en passant, promozione a scelta
 - Patte automatiche: stallo, triplice ripetizione, regola delle 50 mosse, materiale insufficiente
+- **Online con un amico**: crei la partita, mandi il codice o il link (anche con "Condividi"),
+  l'amico entra e giocate ognuno dal suo telefono. Se la rete cade si ricollega da solo e la
+  partita riprende; c'è "Arrenditi" e a fine partita "Rivincita" (colori scambiati).
+  Non serve un nostro server: i dispositivi si parlano direttamente (PeerJS / WebRTC).
+- **Stile** (pulsante con la tavolozza): 8 scacchiere (Legno, Torneo, Mare, Noce, Marmo, Notte,
+  Corallo, Ametista) e 6 set di pezzi (Classici, Legno, Oro e acciaio, Marmo, Rosso e blu,
+  Giada e rubino); la scelta resta salvata
 - **Due giocatori** sullo stesso dispositivo oppure **contro il computer** (5 livelli:
   Principiante, Facile, Medio, Difficile, Esperto), giocando col Bianco, col Nero o a caso
 - Si muove **toccando** (pezzo, poi casa) oppure **trascinando**, con dito, mouse o penna
@@ -64,7 +72,9 @@ npm test
 | `src/js/ai.js` | Il **computer**: minimax con potatura alfa-beta |
 | `src/js/worker.js` | Fa pensare il computer "a parte", senza bloccare la pagina |
 | `src/js/lessons.js` | Le **lezioni** della modalità Impara (testi, posizioni, esercizi) |
-| `src/js/app.js` | **Interfaccia**: disegno, tocco/trascinamento, salvataggio, lezioni |
+| `src/js/app.js` | **Interfaccia**: disegno, tocco/trascinamento, salvataggio, lezioni, stile, partita online |
+| `src/js/online.js` | Collegamento con l'amico (codice, riconnessione, chi ha la partita più aggiornata) |
+| `src/js/peerjs.min.js` | Libreria PeerJS (MIT) per il collegamento diretto tra dispositivi |
 | `src/sw.js`, `src/manifest.webmanifest` | Offline e installazione (PWA) |
 | `src/pieces/` | Disegni dei pezzi |
 | `src/icons/` | Icone dell'app (generate con `npm run icons` da `assets/icon.svg`) |
@@ -75,4 +85,5 @@ npm test
 - Codice, lezioni, computer avversario, interfaccia e icona: **proprietà esclusiva** del titolare,
   **tutti i diritti riservati** ([LICENSE](LICENSE)). Il codice è visibile su GitHub ma non è riutilizzabile senza permesso.
 - Pezzi "cburnett" di Colin M.L. Burnett, licenza CC BY-SA 3.0 (gli stessi di Wikipedia e Lichess): restano dei loro autori.
-- Privacy: nessun dato lascia il dispositivo ([docs/privacy.md](docs/privacy.md)).
+- Libreria PeerJS, licenza MIT ([docs/licenze-terze-parti.md](docs/licenze-terze-parti.md)).
+- Privacy: nessun dato lascia il dispositivo, tranne le mosse durante una partita online ([docs/privacy.md](docs/privacy.md)).
