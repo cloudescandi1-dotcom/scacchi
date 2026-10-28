@@ -8,5 +8,5 @@
     "test": "node --test tests/chess.test.js tests/ai.test.js tests/lessons.test.js",
     "icons": "node tools/make-icons.js"
   },
-  "license": "UNLICENSED"
+  "license": "SEE LICENSE IN LICENSE"
 }

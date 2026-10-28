@@ -2,6 +2,8 @@
 
 Gioco di scacchi per **telefono, PC e iPad**, fatto come web app installabile (PWA).
 
+**© 2026 cloudescandi1-dotcom. Tutti i diritti riservati** (tranne i disegni dei pezzi, vedi sotto) — [LICENSE](LICENSE) · [privacy](docs/privacy.md).
+
 **Gioca online:** https://cloudescandi1-dotcom.github.io/scacchi/
 
 ## Stato (27/10/2026)
@@ -69,5 +71,8 @@ npm test
 | `tests/` | Test automatici |
 | `tools/` | Server di prova e generatore di icone |
 
-## Crediti
-Pezzi "cburnett" di Colin M.L. Burnett, licenza CC BY-SA 3.0 (gli stessi di Wikipedia e Lichess).
+## Diritti d'autore, crediti e privacy
+- Codice, lezioni, computer avversario, interfaccia e icona: **proprietà esclusiva** del titolare,
+  **tutti i diritti riservati** ([LICENSE](LICENSE)). Il codice è visibile su GitHub ma non è riutilizzabile senza permesso.
+- Pezzi "cburnett" di Colin M.L. Burnett, licenza CC BY-SA 3.0 (gli stessi di Wikipedia e Lichess): restano dei loro autori.
+- Privacy: nessun dato lascia il dispositivo ([docs/privacy.md](docs/privacy.md)).

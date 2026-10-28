@@ -1,0 +1,20 @@
+Scacchi
+Copyright (c) 2026 cloudescandi1-dotcom. Tutti i diritti riservati.
+
+Il gioco "Scacchi" e i suoi contenuti originali (codice sorgente, motore delle regole,
+avversario computer, lezioni e testi della modalità Impara, grafica dell'interfaccia e
+icona dell'app) sono opere di proprietà esclusiva del titolare indicato sopra e sono
+protetti dalla legge sul diritto d'autore (in Italia la Legge 22 aprile 1941 n. 633)
+e dai trattati internazionali.
+
+Il fatto che il codice sia visibile pubblicamente su GitHub NON concede alcuna licenza.
+Senza il permesso scritto del titolare è vietato copiare, modificare, distribuire,
+ripubblicare o vendere il gioco o parti di esso, o usarne codice e testi altrove.
+È consentito soltanto giocare tramite il sito ufficiale per uso personale.
+
+Componenti di terze parti (NON coperti da questa dichiarazione, restano dei loro autori):
+- Disegni dei pezzi "cburnett" (src/pieces/*.svg) di Colin M.L. Burnett,
+  licenza Creative Commons Attribution-ShareAlike 3.0
+  (https://creativecommons.org/licenses/by-sa/3.0/). Fonte: Wikimedia Commons / lichess.
+
+Le regole degli scacchi e i nomi delle aperture appartengono al patrimonio comune.
