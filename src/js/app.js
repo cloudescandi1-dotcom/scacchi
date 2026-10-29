@@ -15,17 +15,13 @@
   const HINT_LEVEL = 4; // forza del computer quando dà suggerimenti
   const STYLE_KEY = 'scacchi-stile-v1';
 
-  // Altezza vera dello schermo. Da app installata sull'iPhone iOS a volte dice un'altezza più corta
-  // (senza la fascia dell'orologio) e in basso restava una striscia vuota: lì si usa quella dello schermo.
+  // Altezza della parte visibile. Da app installata il gioco comincia sotto l'orologio (barra dell'iPhone
+  // in tinta unita): se andasse sotto l'orologio, iOS 26 sfocherebbe la parte in alto.
   const installed = window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
   // da app installata la pagina non deve scorrere: iOS sfuocherebbe la parte in alto
   if (installed) document.documentElement.classList.add('installata');
   function appHeight() {
-    let h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-    if (installed && screen.width && screen.height) {
-      const full = innerWidth > innerHeight ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height);
-      if (h > full * 0.85) h = full;
-    }
+    const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     document.documentElement.style.setProperty('--app-h', Math.round(h) + 'px');
   }
   appHeight();
