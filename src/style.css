@@ -23,7 +23,7 @@
 }
 
 /* Lato della scacchiera: dichiarato su body così la modalità Impara può cambiarlo */
-body { --board: min(100vw - 16px, 100dvh - var(--topbar) - var(--bars) - var(--panel-portrait), 640px); }
+body { --board: min(100vw - 16px, var(--app-h, 100dvh) - var(--topbar) - var(--bars) - var(--panel-portrait), 640px); }
 body.learning { --panel-portrait: 250px; --bars: 0px; }
 
 [hidden] { display: none !important; }
@@ -49,7 +49,7 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: var(--app-h, 100dvh);
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
@@ -328,7 +328,7 @@ select {
 /* ---------- Schermi larghi e orizzontali (PC, iPad in orizzontale): mosse a destra ----------
    Sta in fondo al file così vince sulle regole scritte sopra. */
 @media (min-width: 760px) and (min-aspect-ratio: 5/4) {
-  body, body.learning { --board: min(100dvh - var(--topbar) - var(--bars) - 16px, 100vw - 360px, 860px); }
+  body, body.learning { --board: min(var(--app-h, 100dvh) - var(--topbar) - var(--bars) - 16px, 100vw - 360px, 860px); }
   .layout { flex-direction: row; justify-content: center; align-items: flex-start; gap: 20px; }
   .panel { flex: none; width: 300px; height: calc(var(--board) + var(--bars)); }
 }

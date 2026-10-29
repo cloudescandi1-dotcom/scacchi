@@ -1,6 +1,6 @@
 // Service worker: salva i file del gioco nel dispositivo, così funziona anche offline.
 // Se aggiungi o rinomini file, aggiorna l'elenco e aumenta il numero di versione.
-const CACHE = 'scacchi-v8';
+const CACHE = 'scacchi-v9';
 
 const FILES = [
   './',
