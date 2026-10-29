@@ -55,11 +55,13 @@ body {
 
 /* App installata sull'iPhone: la pagina è alta quanto lo schermo e non scorre (se scorresse, iOS sfuma la parte in alto) */
 html.installata { overflow: hidden; }
-/* iOS 26 sfoca la parte alta delle app installate, tranne quando in cima c'è una fascia fissa
-   di un solo colore: eccola, dietro l'orologio, dello stesso colore dello sfondo */
-html.installata body::before {
-  content: ''; position: fixed; left: 0; right: 0; top: 0; height: max(env(safe-area-inset-top), 12px);
-  background: var(--bg); z-index: 40; pointer-events: none;
+/* iOS 26 sfoca la parte alta delle app installate. Non lo fa se, toccando appena sotto il bordo alto,
+   trova un elemento VERO, fisso, largo quanto lo schermo e di un solo colore (alto più di 10px):
+   è questa fascia dietro l'orologio. Deve poter essere "toccata": niente pointer-events: none. */
+.edge-top { display: none; }
+html.installata .edge-top {
+  display: block; position: fixed; left: 0; right: 0; top: 0; height: max(env(safe-area-inset-top), 12px);
+  background-color: var(--bg); z-index: 40;
 }
 
 button { font: inherit; color: inherit; cursor: pointer; }
