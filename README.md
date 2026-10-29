@@ -1,4 +1,4 @@
-﻿# Video gioco â€” Scacchi
+# Video gioco â€” Scacchi
 
 Gioco di scacchi per **telefono, PC e iPad**, fatto come web app installabile (PWA).
 
