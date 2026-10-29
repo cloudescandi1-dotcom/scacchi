@@ -18,6 +18,8 @@
   // Altezza vera dello schermo. Da app installata sull'iPhone iOS a volte dice un'altezza più corta
   // (senza la fascia dell'orologio) e in basso restava una striscia vuota: lì si usa quella dello schermo.
   const installed = window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+  // da app installata la pagina non deve scorrere: iOS sfuocherebbe la parte in alto
+  if (installed) document.documentElement.classList.add('installata');
   function appHeight() {
     let h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     if (installed && screen.width && screen.height) {

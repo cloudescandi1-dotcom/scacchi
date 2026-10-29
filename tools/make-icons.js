@@ -25,13 +25,17 @@ const html = path.join(tmp, 'icon.html');
 fs.writeFileSync(html, `<!doctype html><html><body style="margin:0;overflow:hidden">
 <div style="width:calc(100vw + 2px);height:calc(100vh + 2px)">${svg.replace('<svg ', '<svg width="100%" height="100%" preserveAspectRatio="none" ')}</div></body></html>`);
 
-const outputs = [['icon-180.png', 180], ['icon-192.png', 192], ['icon-512.png', 512], ['icon-maskable-512.png', 512]];
+// Chrome disegna bene solo la versione grande (512): con le scale piccole sposta il disegno a destra.
+// Allora si crea la 512 e le altre si ottengono rimpicciolendola con Python (libreria Pillow).
+const big = path.join(outDir, 'icon-512.png');
+execFileSync(chrome, ['--headless', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1',
+  `--user-data-dir=${path.join(tmp, 'profilo')}`,
+  '--window-size=512,512', `--screenshot=${big}`, 'file:///' + html.replace(/\\/g, '/')], { stdio: 'ignore' });
+console.log('creata', path.relative(root, big));
+const outputs = [['icon-180.png', 180], ['icon-192.png', 192], ['icon-maskable-512.png', 512]];
 for (const [name, size] of outputs) {
   const out = path.join(outDir, name);
-  // Chrome non apre finestre troppo piccole: si disegna sempre a 512 e si riduce con la scala
-  execFileSync(chrome, ['--headless', '--disable-gpu', '--hide-scrollbars', `--force-device-scale-factor=${size / 512}`,
-    `--user-data-dir=${path.join(tmp, 'profilo')}`,
-    '--window-size=512,512', `--screenshot=${out}`, 'file:///' + html.replace(/\\/g, '/')], { stdio: 'ignore' });
+  execFileSync('python', ['-c', 'import sys; from PIL import Image; Image.open(sys.argv[1]).convert("RGB").resize((int(sys.argv[3]),) * 2, Image.LANCZOS).save(sys.argv[2])', big, out, String(size)]);
   console.log('creata', path.relative(root, out));
 }
 fs.rmSync(tmp, { recursive: true, force: true });

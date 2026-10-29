@@ -53,6 +53,9 @@ body {
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
+/* App installata sull'iPhone: la pagina è alta quanto lo schermo e non scorre (se scorresse, iOS sfuma la parte in alto) */
+html.installata { overflow: hidden; }
+
 button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- Barra in alto ---------- */
