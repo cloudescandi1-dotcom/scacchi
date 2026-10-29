@@ -7,6 +7,7 @@ Gioco di scacchi per **telefono, PC e iPad**, fatto come web app installabile (P
 **Gioca online:** https://cloudescandi1-dotcom.github.io/scacchi/
 
 ## Stato (29/10/2026)
+- ✅ Versione 1.5: scacchiera più grande sul telefono girato e sull'iPad in verticale; su iPhone l'app installata comincia sotto l'orologio (niente sfocatura di iOS 26); aggiornamenti più rapidi
 - ✅ Versione 1.4: icona col cavallo centrata; da app installata sull'iPhone la pagina riempie tutto lo schermo (niente striscia vuota in basso)
 - ✅ Versione 1.3: **mosse online velocissime** anche con i dati mobili: passano da Supabase su un canale che possono usare solo i due giocatori (l'indirizzo IP non si vede più); chi scopre il codice di una partita piena resta fuori
 - ✅ Versione 1.2: **partita online con un amico** e **stile** di scacchiera e pezzi

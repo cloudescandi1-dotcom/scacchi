@@ -23,7 +23,7 @@
 }
 
 /* Lato della scacchiera: dichiarato su body così la modalità Impara può cambiarlo */
-body { --board: min(100vw - 16px, var(--app-h, 100dvh) - var(--topbar) - var(--bars) - var(--panel-portrait), 640px); }
+body { --board: min(100vw - 16px, var(--app-h, 100dvh) - var(--topbar) - var(--bars) - var(--panel-portrait), 860px); }
 body.learning { --panel-portrait: 250px; --bars: 0px; }
 
 [hidden] { display: none !important; }
@@ -342,4 +342,15 @@ select {
   body, body.learning { --board: min(var(--app-h, 100dvh) - var(--topbar) - var(--bars) - 16px, 100vw - 360px, 860px); }
   .layout { flex-direction: row; justify-content: center; align-items: flex-start; gap: 20px; }
   .panel { flex: none; width: 300px; height: calc(var(--board) + var(--bars)); }
+}
+
+/* ---------- Telefono girato in orizzontale (schermo basso): barre più sottili, scacchiera più grande ---------- */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root { --topbar: 44px; }
+  body, body.learning { --bars: 48px; }
+  .player-bar { height: 24px; }
+  .topbar h1 { font-size: 1.05rem; }
+  .actions span { display: none; }
+  .actions button { min-height: 34px; padding: 0 10px; }
+  .layout { padding-bottom: 4px; }
 }

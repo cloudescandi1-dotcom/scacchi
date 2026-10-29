@@ -1,6 +1,6 @@
 // Service worker: salva i file del gioco nel dispositivo, così funziona anche offline.
 // Se aggiungi o rinomini file, aggiorna l'elenco e aumenta il numero di versione.
-const CACHE = 'scacchi-v13';
+const CACHE = 'scacchi-v14';
 
 const FILES = [
   './',
@@ -38,10 +38,12 @@ self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   // Prima la rete (così vedi sempre l'ultima versione) e aggiorna la copia salvata;
   // se sei offline usa la copia salvata.
+  // no-cache: chiede sempre al sito se il file è cambiato (senza, il telefono può tenere la versione vecchia per minuti)
+  const same = new URL(e.request.url).origin === location.origin;
   e.respondWith(
-    fetch(e.request)
+    (same ? fetch(e.request, { cache: 'no-cache' }) : fetch(e.request))
       .then((res) => {
-        if (res.ok && new URL(e.request.url).origin === location.origin) {
+        if (res.ok && same) {
           const copy = res.clone();
           caches.open(CACHE).then((cache) => cache.put(e.request, copy));
         }
