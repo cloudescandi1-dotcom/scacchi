@@ -55,6 +55,12 @@ body {
 
 /* App installata sull'iPhone: la pagina è alta quanto lo schermo e non scorre (se scorresse, iOS sfuma la parte in alto) */
 html.installata { overflow: hidden; }
+/* iOS 26 sfoca la parte alta delle app installate, tranne quando in cima c'è una fascia fissa
+   di un solo colore: eccola, dietro l'orologio, dello stesso colore dello sfondo */
+html.installata body::before {
+  content: ''; position: fixed; left: 0; right: 0; top: 0; height: max(env(safe-area-inset-top), 12px);
+  background: var(--bg); z-index: 40; pointer-events: none;
+}
 
 button { font: inherit; color: inherit; cursor: pointer; }
 
