@@ -17,6 +17,6 @@ Componenti di terze parti (NON coperti da questa dichiarazione, restano dei loro
   licenza Creative Commons Attribution-ShareAlike 3.0
   (https://creativecommons.org/licenses/by-sa/3.0/). Fonte: Wikimedia Commons / lichess.
   Anche le loro versioni ricolorate (stili dei pezzi) restano sotto la stessa licenza.
-- Libreria PeerJS 1.5.4 (src/js/peerjs.min.js), licenza MIT, testo in docs/licenze-terze-parti.md.
+- Libreria supabase-js 2.45.4 (src/js/supabase.js), licenza MIT, Copyright (c) 2020 Supabase, testo in docs/licenze-terze-parti.md.
 
 Le regole degli scacchi e i nomi delle aperture appartengono al patrimonio comune.

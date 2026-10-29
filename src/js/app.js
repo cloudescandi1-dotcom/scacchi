@@ -1035,7 +1035,6 @@
 
   function connectOnline() {
     const o = state.online;
-    if (o.role === 'guest' && !o.token) o.token = Online.newCode() + Online.newCode() + Online.newCode();
     o.net = 'apertura';
     Online.open(o.role, o.code, {
       onStatus: (s) => {
@@ -1046,8 +1045,9 @@
       },
       onConnect: () => { if (state.online === o) Online.send(Object.assign({ t: 'sync' }, snapshot())); },
       onMessage: onlineMessage,
-      onToken: (t) => { if (state.online === o) { o.token = t; save(); } },
-    }, o.token);
+      // il codice appena inventato è già usato da un'altra partita (rarissimo): se ne prende un altro
+      onCodeTaken: () => { if (state.online === o) { o.code = Online.newCode(); save(); render(); connectOnline(); } },
+    });
   }
 
   // role: 'host' (crea) o 'guest' (entra con il codice)
@@ -1144,7 +1144,7 @@
     try {
       const data = {
         mode: state.mode, human: state.human, level: state.level, flipped: state.flipped,
-        online: state.online && { role: state.online.role, code: state.online.code, white: state.online.white, n: state.online.n, resign: state.online.resign || null, met: !!state.online.met, token: state.online.token || null },
+        online: state.online && { role: state.online.role, code: state.online.code, white: state.online.white, n: state.online.n, resign: state.online.resign || null, met: !!state.online.met },
         moves: state.game.history.map(m => ({ from: m.from, to: m.to, promotion: m.promotion })),
       };
       localStorage.setItem(SAVE_KEY, JSON.stringify(data));
@@ -1166,7 +1166,7 @@
       state.online = null;
       if (state.mode === 'online') {
         const o = data.online;
-        state.online = { role: o.role === 'host' ? 'host' : 'guest', code: String(o.code), white: o.white || null, n: o.n | 0, resign: o.resign || null, met: !!o.met, token: typeof o.token === 'string' ? o.token : null, net: 'apertura' };
+        state.online = { role: o.role === 'host' ? 'host' : 'guest', code: String(o.code), white: o.white || null, n: o.n | 0, resign: o.resign || null, met: !!o.met, net: 'apertura' };
         if (state.online.resign) state.over = resignOver(state.online.resign);
       }
       return true;

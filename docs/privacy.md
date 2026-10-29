@@ -1,14 +1,17 @@
 # Informativa sulla privacy — Scacchi
 
-Ultimo aggiornamento: 28 ottobre 2026 (partita online). Titolare: cloudescandi1-dotcom.
+Ultimo aggiornamento: 29 ottobre 2026 (partita online tramite Supabase). Titolare: cloudescandi1-dotcom.
 
-- **Niente account, email, cookie, pubblicità o statistiche.**
+- **Niente email, cookie, pubblicità o statistiche.**
 - La partita in corso, i progressi delle lezioni e lo stile scelto sono salvati **solo sul tuo
   dispositivo** (memoria del browser). Il computer avversario gira tutto sul tuo dispositivo.
-- **Partita online con un amico:** solo se la usi, i due dispositivi si collegano direttamente tra
-  loro (WebRTC). Per "presentarsi" passano dal servizio gratuito PeerJS (0.peerjs.com), che vede
-  il codice della partita e l'indirizzo IP. Si scambiano soltanto le mosse e i colori: niente nomi,
-  email o altri dati. Durante la connessione ciascun dispositivo può vedere l'indirizzo IP dell'altro.
+- **Partita online con un amico:** solo se la usi, il gioco entra in automatico come **ospite**
+  (un account anonimo con un codice casuale, senza nome né email) sul servizio **Supabase**
+  (Supabase Inc., dati in un centro dati in Europa). Supabase conserva il codice della partita,
+  quali due account ci giocano e dati tecnici dell'accesso (per esempio data e indirizzo IP, per
+  sicurezza). Le mosse passano dai suoi server e arrivano solo all'amico: i due dispositivi **non**
+  vedono l'indirizzo IP l'uno dell'altro. Informativa di Supabase: https://supabase.com/privacy
+  Per far cancellare i dati dell'account ospite scrivi tramite la pagina GitHub del progetto.
 - Il sito è ospitato da GitHub Pages, che può registrare dati tecnici delle visite
   (per esempio l'indirizzo IP) secondo la propria informativa:
   https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement
