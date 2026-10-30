@@ -12,6 +12,10 @@ Ultimo aggiornamento: 29 ottobre 2026 (partita online tramite Supabase). Titolar
   sicurezza). Le mosse passano dai suoi server e arrivano solo all'amico: i due dispositivi **non**
   vedono l'indirizzo IP l'uno dell'altro. Informativa di Supabase: https://supabase.com/privacy
   Per far cancellare i dati dell'account ospite scrivi tramite la pagina GitHub del progetto.
+- **Controllo anti-robot:** quando la partita online crea l'account ospite, **Cloudflare Turnstile** (Cloudflare Inc.)
+  verifica, di solito senza farti fare niente, che sia una persona e non un programma. Riceve dati tecnici del
+  dispositivo e del browser, come l'indirizzo IP, e li usa solo per questo controllo.
+  Informativa: https://www.cloudflare.com/turnstile-privacy-policy/
 - Il sito è ospitato da GitHub Pages, che può registrare dati tecnici delle visite
   (per esempio l'indirizzo IP) secondo la propria informativa:
   https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement

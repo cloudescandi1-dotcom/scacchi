@@ -62,7 +62,9 @@
   async function session() {
     const { data } = await sb.auth.getSession();
     if (data && data.session) return data.session;
-    const r = await sb.auth.signInAnonymously();
+    let captchaToken;
+    try { captchaToken = root.Captcha ? await root.Captcha.token() : undefined; } catch (e) { return null; }   // captcha.js: prova che è una persona
+    const r = await sb.auth.signInAnonymously({ options: { captchaToken } });
     return r.error ? null : r.data.session;
   }
 
