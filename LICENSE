@@ -1,22 +1,86 @@
-Scacchi
-Copyright (c) 2026 cloudescandi1-dotcom. Tutti i diritti riservati.
+SCACCHI — LICENZA PROPRIETARIA / PROPRIETARY LICENSE
+Copyright © 2026 Scandi. Tutti i diritti riservati. All rights reserved.
 
-Il gioco "Scacchi" e i suoi contenuti originali (codice sorgente, motore delle regole,
-avversario computer, lezioni e testi della modalità Impara, grafica dell'interfaccia e
-icona dell'app) sono opere di proprietà esclusiva del titolare indicato sopra e sono
-protetti dalla legge sul diritto d'autore (in Italia la Legge 22 aprile 1941 n. 633)
-e dai trattati internazionali.
+================================================================
+ITALIANO
+================================================================
 
-Il fatto che il codice sia visibile pubblicamente su GitHub NON concede alcuna licenza.
-Senza il permesso scritto del titolare è vietato copiare, modificare, distribuire,
-ripubblicare o vendere il gioco o parti di esso, o usarne codice e testi altrove.
-È consentito soltanto giocare tramite il sito ufficiale per uso personale.
+Il presente software, denominato "Scacchi", comprensivo del codice
+sorgente, del motore delle regole, dell'avversario computer, delle lezioni e dei
+testi della modalità Impara, della grafica dell'interfaccia e dei pezzi e di
+ogni file associato (di seguito, "il Software"), è di PROPRIETÀ ESCLUSIVA di
+Scandi (di seguito, "il Titolare") ed è protetto dalla legge sul diritto
+d'autore (L. 22 aprile 1941, n. 633 e successive modifiche) e dalle convenzioni
+internazionali applicabili.
 
-Componenti di terze parti (NON coperti da questa dichiarazione, restano dei loro autori):
-- Disegni dei pezzi "cburnett" (src/pieces/*.svg) di Colin M.L. Burnett,
-  licenza Creative Commons Attribution-ShareAlike 3.0
-  (https://creativecommons.org/licenses/by-sa/3.0/). Fonte: Wikimedia Commons / lichess.
-  Anche le loro versioni ricolorate (stili dei pezzi) restano sotto la stessa licenza.
-- Libreria supabase-js 2.45.4 (src/js/supabase.js), licenza MIT, Copyright (c) 2020 Supabase, testo in docs/licenze-terze-parti.md.
+TUTTI I DIRITTI SONO RISERVATI.
 
-Le regole degli scacchi e i nomi delle aperture appartengono al patrimonio comune.
+Senza il preventivo consenso scritto ed esplicito del Titolare è espressamente
+VIETATO, a chiunque e per qualsiasi finalità (personale, didattica o
+commerciale):
+
+  1. copiare, riprodurre, scaricare in modo permanente, memorizzare, distribuire,
+     pubblicare, ripubblicare, condividere o rendere altrimenti disponibile il
+     Software o qualsiasi sua parte;
+  2. modificare, adattare, tradurre, decompilare o creare opere derivate basate
+     sul Software;
+  3. utilizzare il Software, in tutto o in parte, per realizzare prodotti o
+     servizi propri o di terzi;
+  4. rimuovere, occultare o alterare le note di copyright, i marchi o la presente
+     licenza.
+
+La semplice consultazione dell'applicazione tramite il suo indirizzo web
+ufficiale, per uso personale e non commerciale, non costituisce autorizzazione
+ad alcuno degli atti sopra vietati.
+
+Qualsiasi uso non autorizzato costituisce violazione del diritto d'autore e
+sarà PERSEGUITO NELLE COMPETENTI SEDI LEGALI, civili e penali, con richiesta di
+inibitoria e di risarcimento di tutti i danni, ai sensi della normativa italiana
+e internazionale vigente.
+
+Per richieste di licenza, autorizzazioni o collaborazioni contattare il
+Titolare: Scandi — cloudescandi1@gmail.com
+
+================================================================
+ENGLISH
+================================================================
+
+This software, named "Scacchi", including its source code, rules engine,
+computer opponent, lessons and texts, user interface and piece graphics and all associated files (the "Software"), is the
+EXCLUSIVE PROPERTY of Scandi (the "Owner") and is protected by copyright law and
+applicable international treaties.
+
+ALL RIGHTS RESERVED.
+
+Without the Owner's prior, explicit, written consent, it is expressly PROHIBITED
+for anyone, for any purpose (personal, educational or commercial), to: copy,
+reproduce, permanently store, distribute, publish, share or otherwise make
+available the Software or any part of it; modify, adapt, translate, decompile or
+create derivative works; use the Software, in whole or in part, to build one's
+own or third-party products or services; or remove, hide or alter the copyright
+notices, trademarks or this license.
+
+Any unauthorized use constitutes copyright infringement and WILL BE PROSECUTED IN
+THE COMPETENT COURTS, seeking injunctive relief and full compensation for
+damages, under applicable national and international law.
+
+For license requests, permissions or partnerships, contact the Owner: Scandi —
+cloudescandi1@gmail.com
+
+================================================================
+COMPONENTI DI TERZE PARTI / THIRD-PARTY COMPONENTS
+================================================================
+
+Questa licenza si applica esclusivamente al codice e ai contenuti ORIGINALI del
+Titolare. Il Software si avvale di servizi e librerie di terze parti che
+restano soggetti alle rispettive licenze e condizioni d'uso, tra cui:
+This license applies only to the Owner's ORIGINAL code and content. The Software
+uses third-party services and libraries that remain subject to their own
+licenses and terms, including:
+
+  - supabase-js (MIT) — https://github.com/supabase/supabase-js
+    testo completo della licenza / full license text: LICENZE-TERZE-PARTI.md
+  - Servizio per il gioco online / online play service: Supabase — https://supabase.com
+
+Il Titolare non rivendica alcun diritto su tali componenti di terze parti.
+The Owner claims no rights over such third-party components.
