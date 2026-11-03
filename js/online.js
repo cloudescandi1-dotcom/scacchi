@@ -53,7 +53,7 @@
 
   function client() {
     if (!sb && root.supabase && root.supabase.createClient) {
-      sb = root.supabase.createClient(URL, KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'account-scacchi' } });
+      sb = root.supabase.createClient(URL, KEY, { auth: { persistSession: !root.Archivio || root.Archivio.ok(), autoRefreshToken: true, storageKey: 'account-scacchi' } });
     }
     return sb;
   }

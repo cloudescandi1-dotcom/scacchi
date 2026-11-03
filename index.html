@@ -236,12 +236,19 @@
       <div id="style-boards" class="style-grid"></div>
       <h3 class="style-title">Pezzi</h3>
       <div id="style-pieces" class="style-grid"></div>
+      <p class="privacy-link"><a href="privacy.html">Privacy e cookie</a> · <a href="#" id="cambia-scelta">Cambia scelta</a></p>
       <div class="dialog-buttons">
         <button value="close" type="submit" class="primary">Fatto</button>
       </div>
     </form>
   </dialog>
 
+  <div class="consenso" id="consenso" role="dialog" aria-label="Scelta su cookie e memoria del dispositivo" hidden>
+    <p><strong>Niente pubblicità, niente tracciamento.</strong> Se accetti, il gioco ricorda sul tuo dispositivo la partita in corso, le lezioni fatte e lo stile della scacchiera. Se rifiuti, si gioca lo stesso ma non ricorda niente quando chiudi la pagina. <a href="privacy.html">Dettagli</a></p>
+    <div class="consenso-btn"><button id="c-rifiuta" type="button" class="secondary">Rifiuta</button><button id="c-accetta" type="button" class="secondary">Accetta</button></div>
+  </div>
+
+  <script src="js/consenso.js"></script>
   <script src="js/captcha.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/online.js"></script>

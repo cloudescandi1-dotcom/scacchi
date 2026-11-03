@@ -354,3 +354,17 @@ select {
   .actions button { min-height: 34px; padding: 0 10px; }
   .layout { padding-bottom: 4px; }
 }
+
+/* Scelta su cookie e memoria del dispositivo: due pulsanti uguali */
+.consenso {
+  position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 1000; max-width: 560px; margin: 0 auto; padding: 14px 16px;
+  background: var(--bg-raised); color: var(--text); border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); font-size: 14px; line-height: 1.5;
+}
+.consenso[hidden] { display: none; }
+.consenso p { margin: 0 0 10px; }
+.consenso a, .privacy-link a { color: var(--light); }
+.consenso-btn { display: flex; gap: 10px; }
+.consenso-btn button { flex: 1; border: 1px solid var(--text-dim); }
+.privacy-link { font-size: 13px; color: var(--text-dim); margin: 14px 0 0; }

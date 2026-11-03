@@ -120,11 +120,11 @@
   }
 
   function loadStyle() {
-    try { Object.assign(style, JSON.parse(localStorage.getItem(STYLE_KEY)) || {}); } catch (err) { /* stile di base */ }
+    try { Object.assign(style, JSON.parse(Archivio.get(STYLE_KEY)) || {}); } catch (err) { /* stile di base */ }
   }
 
   function saveStyle() {
-    try { localStorage.setItem(STYLE_KEY, JSON.stringify(style)); } catch (err) { /* pazienza */ }
+    try { Archivio.set(STYLE_KEY, JSON.stringify(style)); } catch (err) { /* pazienza */ }
   }
 
   function openStyleDialog() {
@@ -830,7 +830,7 @@
   }
 
   function loadProgress() {
-    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || []; } catch (err) { return []; }
+    try { return JSON.parse(Archivio.get(PROGRESS_KEY)) || []; } catch (err) { return []; }
   }
 
   function markDone(index) {
@@ -838,7 +838,7 @@
     const title = LESSONS[index].title;
     if (done.includes(title)) return;
     done.push(title);
-    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(done)); } catch (err) { /* pazienza */ }
+    try { Archivio.set(PROGRESS_KEY, JSON.stringify(done)); } catch (err) { /* pazienza */ }
   }
 
   function openLessonsDialog() {
@@ -1161,13 +1161,13 @@
         online: state.online && { role: state.online.role, code: state.online.code, white: state.online.white, n: state.online.n, resign: state.online.resign || null, met: !!state.online.met },
         moves: state.game.history.map(m => ({ from: m.from, to: m.to, promotion: m.promotion })),
       };
-      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+      Archivio.set(SAVE_KEY, JSON.stringify(data));
     } catch (err) { /* salvataggio non disponibile: si gioca lo stesso */ }
   }
 
   function load() {
     try {
-      const data = JSON.parse(localStorage.getItem(SAVE_KEY));
+      const data = JSON.parse(Archivio.get(SAVE_KEY));
       if (!data) return false;
       const g = new Chess();
       for (const m of data.moves) if (!g.move(m)) break;
